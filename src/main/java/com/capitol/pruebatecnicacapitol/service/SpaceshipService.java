@@ -1,5 +1,6 @@
 package com.capitol.pruebatecnicacapitol.service;
 
+import com.capitol.pruebatecnicacapitol.exceptions.SpaceshipNotFoundException;
 import com.capitol.pruebatecnicacapitol.model.Spaceship;
 import com.capitol.pruebatecnicacapitol.repository.SpaceshipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,19 @@ public class SpaceshipService {
         return spaceshipRepository.findAll(pageable);
     }
 
-    @Cacheable("spaceships")
+    /**
+     * Obtiene una nave espacial por su ID, utilizando caché para almacenar los resultados.
+     *
+     * @param id El ID de la nave espacial.
+     * @return Un Optional que contiene la nave espacial si se encuentra.
+     */
+    @Cacheable(value = "spaceships", key = "#id")
     public Optional<Spaceship> getSpaceshipById(Long id) {
-        return spaceshipRepository.findById(id);
+        System.out.println("Fetching spaceship with id " + id + " from database.");
+        return spaceshipRepository.findById(id)
+                .or(() -> {
+                    throw new SpaceshipNotFoundException("Spaceship not found with id: " + id);
+                });
     }
 
     public List<Spaceship> getSpaceshipsByName(String name) {

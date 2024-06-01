@@ -20,6 +20,7 @@ public class SpaceshipController {
     @Autowired
     private SpaceshipService spaceshipService;
 
+
     @GetMapping
     public ResponseEntity<Page<Spaceship>> getAllSpaceships(Pageable pageable) {
         return ResponseEntity.ok(spaceshipService.getAllSpaceships(pageable));
